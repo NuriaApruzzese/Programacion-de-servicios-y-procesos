@@ -1,0 +1,129 @@
+package simulacro.practico.dos;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+
+public class ClienteRecaudacion{
+	
+	public ClienteRecaudacion(int envioRecaudacion) {
+		
+		
+	}
+	
+	private int envioRecaudacion;
+	
+	public String getenvioRecaudacion() {
+		
+		return "Recaudación enviada "+envioRecaudacion;
+	}
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		ClienteRecaudacion miCiente=new ClienteRecaudacion(35000);
+		
+		
+		try {
+			
+			//creacion de la comunicación
+			
+			Socket scliente=new Socket("192.168.1.91", 9999);
+			
+			//Creo un flujo de datos que queremos enviar al servidor
+
+			DataOutputStream out=new DataOutputStream(scliente.getOutputStream());
+			
+			//envío mensaje a cliente
+			
+			out.writeUTF(miCiente.getenvioRecaudacion());
+			
+			//leo el mensaje
+			
+			
+			DataInputStream in=new DataInputStream(scliente.getInputStream()); 
+				
+			//recibo mensaje del servidor
+			
+			String mensaje=in.readUTF();
+			
+			System.out.println(mensaje);
+			
+			//cerramos la conexión
+			
+			scliente.close();
+					
+		
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}	
+		
+	}
+}
+package simulacro.practico.dos;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+
+public class Servidor{
+	
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+			
+		ServerSocket servidor=null;
+		Socket scliente=null;
+		
+		//para la entrada y salida de datos me creo mis flujos de datos
+
+		
+		try {
+			
+			servidor=new ServerSocket(9999); //abre el puerto 9999 que habíamos indicado en el socket del cliente
+			
+			System.out.println("Servidor iniciado");
+			
+			while(true) {
+			
+			scliente=servidor.accept(); //acepta la conexión
+			
+			System.out.println("Cliente conectado");
+			
+			//creamos un flujo de datos de entrada/salida para que recoja lo que envía el cliente
+			
+			DataInputStream in=new DataInputStream(scliente.getInputStream());//recibe mensajes del cliente
+			DataOutputStream out=new DataOutputStream(scliente.getOutputStream());//envía mensajes al cliente
+			
+			String mensajeTexto=in.readUTF();//se queda a la espera del mensaje
+			
+			System.out.println(mensajeTexto);
+			
+			out.writeUTF("recibido");
+			
+				in.close();
+				out.close();
+				
+				scliente.close();
+				
+				System.out.println("Cliente desconectado");
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	}		
+		
+
